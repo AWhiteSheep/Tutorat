@@ -58,6 +58,7 @@
     <Folder Include="Properties" />
     <Folder Include="dbo" />
     <Folder Include="published\" />
+    <Folder Include="scripts" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Roles.sql" />
@@ -68,9 +69,19 @@
     <Build Include="dbo\Inscriptions.sql" />
     <Build Include="dbo\AfterInsertInscriptions.sql" />
     <Build Include="dbo\ForInsertInscriptions.sql" />
+    <Build Include="dbo\Notifications.sql" />
+    <Build Include="dbo\AfterInsertDemandes.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="published\Tutorat.Sql.publish.xml" />
-    <None Include="Tutorat.Sql.publish.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="scripts\Script.PostDeployment.sql" />
+  </ItemGroup>
+  <PropertyGroup>
+    <PreBuildEvent />
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>:r .\scripts\Script.PostDeployment.sql</PostBuildEvent>
+  </PropertyGroup>
 </Project>

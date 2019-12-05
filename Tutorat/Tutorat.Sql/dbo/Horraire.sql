@@ -4,7 +4,7 @@
 	[ServiceId] int not null foreign key references [Services] (IdentityKey) on delete cascade,
 	[Jour] int not null check (jour < 7 and jour > -1),
 	[HeureDebut] time not null,
-	[NHours] int not null,
-	[NMin] int not null,
+	[NbHeure] int not null,
+	[NbMinute] int not null default 0,
 	[EleveMaxInscription] int not null
 )
