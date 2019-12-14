@@ -3,7 +3,9 @@
     [IdentifiantHoraire]   INT            NOT NULL,
     [AcceptedDate]         DATETIME       CONSTRAINT [DF__Inscripti__Accep__32E0915F] DEFAULT (getdate()) NOT NULL,
     [EndDate]              DATETIME       CONSTRAINT [DF__Inscripti__EndDa__33D4B598] DEFAULT (dateadd(month,(3),getdate())) NOT NULL,
-    CONSTRAINT [FK__Inscripti__Ident__3A81B327] FOREIGN KEY ([IdentifiantDemandeur]) REFERENCES [dbo].[AspNetUsers] ([Id]) ON DELETE CASCADE,
+    [NotificationId] int null,
+	CONSTRAINT [FK__Inscription__Notification] FOREIGN KEY ([NotificationId]) REFERENCES [dbo].[Notifications] ([IdentityKey]),
+	CONSTRAINT [FK__Inscripti__Ident__3A81B327] FOREIGN KEY ([IdentifiantDemandeur]) REFERENCES [dbo].[AspNetUsers] ([Id]) ON DELETE CASCADE,
     CONSTRAINT [PK__Inscriptions] PRIMARY KEY ([IdentifiantDemandeur], [IdentifiantHoraire])
 );
 
@@ -42,6 +44,7 @@ BEGIN
 	declare @nomTuteur nvarchar(max);
 	declare @nomDemandeur nvarchar(max);
 	declare @entityRelated nvarchar(max);
+	declare @notificationId int;
 		
 	set @entityRelated = (select h.ServiceId from inserted i left join Horraire h on i.IdentifiantHoraire = h.IdentityKey);
 	set @identifiantDemandeur = (select IdentifiantDemandeur from inserted);
@@ -59,31 +62,31 @@ BEGIN
 	insert into 
 		Notifications (
 			[IdentifiantUtilisateurReceiver], 
-			[IdentifiantUtilisateurRelated], 
-			[_IdentityKeyEntityRelated],
-			[_TypeEntity],
+			[IdentifiantUtilisateurRelated],
 			[NotificationName], 
 			[Message])
 		values (
 			@identifiantDemandeur,
 			@identifiantTuteur,
-			@entityRelated,
-			'Inscriptions',
 			'Success',
 			'Vous êtes maintenant inscrit à l''aide par vos paire donné par '+ @nomTuteur+'.')
+
+			
+	set @notificationId = (select top 1 IdentityKey from Notifications);
+
+	update Inscriptions
+	set Inscriptions.NotificationId = @notificationId from inserted
+	where Inscriptions.IdentifiantDemandeur = inserted.IdentifiantDemandeur and Inscriptions.IdentifiantHoraire = inserted.IdentifiantHoraire
+
 	insert into 
 		Notifications (
 			[IdentifiantUtilisateurReceiver], 
 			[IdentifiantUtilisateurRelated], 
-			[_IdentityKeyEntityRelated],
-			[_TypeEntity],
 			[NotificationName], 
 			[Message])
 		values (
 			@identifiantTuteur,
 			@identifiantDemandeur,
-			@entityRelated,
-			'Inscriptions',
 			'Success',
 			@nomDemandeur + ' est inscrit(e) à votre service de tutorat.')
 

@@ -8,8 +8,6 @@ namespace Client.Data
     public partial class Demandes
     {
         [Key]
-        [Required]
-        [StringLength(450)]
         public string IdentifiantUtilisateur { get; set; }
         [Key]
         public int IdentifiantHoraire { get; set; }
@@ -18,6 +16,7 @@ namespace Client.Data
         [Column(TypeName = "date")]
         public DateTime DateExpired { get; set; }
         public bool? Notified { get; set; }
+        public int? NotificationId { get; set; }
 
         [ForeignKey(nameof(IdentifiantHoraire))]
         [InverseProperty(nameof(Horraire.Demandes))]
@@ -25,5 +24,8 @@ namespace Client.Data
         [ForeignKey(nameof(IdentifiantUtilisateur))]
         [InverseProperty(nameof(AspNetUsers.Demandes))]
         public virtual AspNetUsers IdentifiantUtilisateurNavigation { get; set; }
+        [ForeignKey(nameof(NotificationId))]
+        [InverseProperty(nameof(Notifications.Demandes))]
+        public virtual Notifications Notification { get; set; }
     }
 }

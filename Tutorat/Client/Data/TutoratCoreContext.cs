@@ -58,17 +58,16 @@ namespace Client.Data
 
                 entity.Property(e => e.Notified).HasDefaultValueSql("((0))");
 
-                entity.HasOne(d => d.IdentifiantHoraireNavigation)
-                    .WithMany(p => p.Demandes)
-                    .HasForeignKey(d => d.IdentifiantHoraire)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Demandes__Identifianthoraire");
-
                 entity.HasOne(d => d.IdentifiantUtilisateurNavigation)
                     .WithMany(p => p.Demandes)
                     .HasForeignKey(d => d.IdentifiantUtilisateur)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__Demandes__Identi__37A5467C");
+
+                entity.HasOne(d => d.Notification)
+                    .WithMany(p => p.Demandes)
+                    .HasForeignKey(d => d.NotificationId)
+                    .HasConstraintName("FK__Demandes__Notification");
             });
 
             modelBuilder.Entity<Horraire>(entity =>
@@ -95,6 +94,11 @@ namespace Client.Data
                     .WithMany(p => p.Inscriptions)
                     .HasForeignKey(d => d.IdentifiantDemandeur)
                     .HasConstraintName("FK__Inscripti__Ident__3A81B327");
+
+                entity.HasOne(d => d.Notification)
+                    .WithMany(p => p.Inscriptions)
+                    .HasForeignKey(d => d.NotificationId)
+                    .HasConstraintName("FK__Inscription__Notification");
             });
 
             modelBuilder.Entity<Notifications>(entity =>

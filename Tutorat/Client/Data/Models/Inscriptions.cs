@@ -7,8 +7,7 @@ namespace Client.Data
 {
     public partial class Inscriptions
     {
-        [Required]
-        [StringLength(450)]
+        [Key]
         public string IdentifiantDemandeur { get; set; }
         [Key]
         public int IdentifiantHoraire { get; set; }
@@ -16,9 +15,13 @@ namespace Client.Data
         public DateTime AcceptedDate { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime EndDate { get; set; }
+        public int? NotificationId { get; set; }
 
         [ForeignKey(nameof(IdentifiantDemandeur))]
         [InverseProperty(nameof(AspNetUsers.Inscriptions))]
         public virtual AspNetUsers IdentifiantDemandeurNavigation { get; set; }
+        [ForeignKey(nameof(NotificationId))]
+        [InverseProperty(nameof(Notifications.Inscriptions))]
+        public virtual Notifications Notification { get; set; }
     }
 }

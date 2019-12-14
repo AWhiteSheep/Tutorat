@@ -7,6 +7,12 @@ namespace Client.Data
 {
     public partial class Notifications
     {
+        public Notifications()
+        {
+            Demandes = new HashSet<Demandes>();
+            Inscriptions = new HashSet<Inscriptions>();
+        }
+
         [Key]
         public int IdentityKey { get; set; }
         [Required]
@@ -33,5 +39,9 @@ namespace Client.Data
         [ForeignKey(nameof(IdentifiantUtilisateurRelated))]
         [InverseProperty(nameof(AspNetUsers.NotificationsIdentifiantUtilisateurRelatedNavigation))]
         public virtual AspNetUsers IdentifiantUtilisateurRelatedNavigation { get; set; }
+        [InverseProperty("Notification")]
+        public virtual ICollection<Demandes> Demandes { get; set; }
+        [InverseProperty("Notification")]
+        public virtual ICollection<Inscriptions> Inscriptions { get; set; }
     }
 }
