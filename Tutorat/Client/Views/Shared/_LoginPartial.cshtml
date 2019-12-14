@@ -1,26 +1,77 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore;
 @inject SignInManager<AspNetUsers> SignInManager
 @inject UserManager<AspNetUsers> UserManager
+@inject TutoratCoreContext context
+
+@{
+    string UserId = UserManager.GetUserId(User);
+
+    List<Notifications> notifications = new List<Notifications>();
+    // vérifier si logger attraper toutes notifications reliées
+    if (!string.IsNullOrEmpty(UserId))
+    {
+        notifications = context.Notifications
+            .Include(u => u.IdentifiantUtilisateurRelatedNavigation)
+            .Where(e => e.IdentifiantUtilisateurReceiver == UserId && e.Seen == false).ToList();
+    }
+}
 
 <ul class="navbar-nav">
-@if (SignInManager.IsSignedIn(User))
-{
-    <li class="nav-item">
-        <a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity.Name!</a>
-    </li>
-    <li class="nav-item">
-        <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button  type="submit" class="nav-link btn btn-link text-dark">Logout</button>
-        </form>
-    </li>
-}
-else
-{
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
-    </li>
-}
+    @if (!string.IsNullOrEmpty(UserId))
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity.Name!</a>
+        </li>
+        <li class="nav-item">
+            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+            </form>
+        </li>
+
+        <!-- Nav Item - Messages -->
+        <li class="nav-item dropdown no-arrow mx-1">
+            <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-envelope fa-fw"></i>
+                <!-- Counter - Messages -->
+                <span class="badge badge-danger badge-counter">@(notifications.Any() ? notifications.Count.ToString() : "0")</span>
+            </a>
+            <!-- Dropdown - Messages -->
+            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
+                <h6 class="dropdown-header">
+                    Messagerie
+                </h6>
+                @if (notifications.Any())
+                {
+                    @foreach (var notification in notifications)
+                    {
+                        <div class="dropdown-item d-flex align-items-center">
+                            <div class="dropdown-list-image mr-3">
+                                <div class="status-indicator bg-success"></div>
+                            </div>
+                            <div class="font-weight-normal">
+                                <div class="text-truncate">@notification.Message</div>
+                                @switch (notification.TypeEntity)
+                                {
+                                    case "Demandes":
+                                            <div class="small text-gray-500"> @context.Demandes.FirstOrDefault(e => e.IdentifiantHoraire == noti) · 2019</div>
+                                        break;
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        </li>
+
+    }
 </ul>

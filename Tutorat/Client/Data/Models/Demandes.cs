@@ -19,6 +19,9 @@ namespace Client.Data
         public DateTime DateExpired { get; set; }
         public bool? Notified { get; set; }
 
+        [ForeignKey(nameof(IdentifiantHoraire))]
+        [InverseProperty(nameof(Horraire.Demandes))]
+        public virtual Horraire IdentifiantHoraireNavigation { get; set; }
         [ForeignKey(nameof(IdentifiantUtilisateur))]
         [InverseProperty(nameof(AspNetUsers.Demandes))]
         public virtual AspNetUsers IdentifiantUtilisateurNavigation { get; set; }

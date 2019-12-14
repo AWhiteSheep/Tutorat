@@ -10,6 +10,7 @@ namespace Client.Data
         [Required]
         [StringLength(450)]
         public string IdentifiantDemandeur { get; set; }
+        [Key]
         public int IdentifiantHoraire { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime AcceptedDate { get; set; }

@@ -1,0 +1,65 @@
+﻿@model IEnumerable<Client.Data.Horraire>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Jour)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HeureDebut)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NbHeure)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NbMinute)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EleveMaxInscription)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Service)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Jour)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HeureDebut)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NbHeure)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NbMinute)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EleveMaxInscription)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Service.Description)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IdentityKey">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.IdentityKey">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.IdentityKey">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

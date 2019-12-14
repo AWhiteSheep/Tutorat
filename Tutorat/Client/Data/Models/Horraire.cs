@@ -7,6 +7,11 @@ namespace Client.Data
 {
     public partial class Horraire
     {
+        public Horraire()
+        {
+            Demandes = new HashSet<Demandes>();
+        }
+
         [Key]
         public int IdentityKey { get; set; }
         public int ServiceId { get; set; }
@@ -19,5 +24,7 @@ namespace Client.Data
         [ForeignKey(nameof(ServiceId))]
         [InverseProperty(nameof(Services.Horraire))]
         public virtual Services Service { get; set; }
+        [InverseProperty("IdentifiantHoraireNavigation")]
+        public virtual ICollection<Demandes> Demandes { get; set; }
     }
 }

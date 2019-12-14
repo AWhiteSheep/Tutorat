@@ -1,0 +1,7 @@
+﻿@model Client.Data.Demandes
+
+<form asp-controller="Services" asp-action="Apply">
+    <input hidden asp-for="IdentifiantUtilisateur" value="@Model.IdentifiantUtilisateur" />
+    <input hidden asp-for="IdentifiantHoraire" value="@Model.IdentifiantHoraire"/>
+    <input type="submit" value="Appliquer" class="btn btn-link" />
+</form>

@@ -1,0 +1,112 @@
+﻿@model Client.Data.Services
+@inject UserManager<AspNetUsers> UserManager
+
+@using Microsoft.AspNetCore.Identity
+
+@{
+    List<Horraire> horraires = Model.Horraire.ToList();
+    var modelMetadata = this.ViewContext.ViewData.ModelMetadata;
+    var modelState = this.ViewContext.ViewData.ModelState;
+}
+
+<dl class="row">
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Titre)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Titre)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Description)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Description)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Tuteur)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Tuteur.UserName)
+    </dd>
+</dl>
+<dl class="row">
+    <dt class="col-sm-6">
+        <label>Les horaires données:</label>
+    </dt>
+    <dd class="col-sm-12">
+        <table id="horaire-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Jour de la semaine</th>
+                    <th>Heure de début</th>
+                    <th>Durée</th>
+                    <th>Nombre d'élève maximal</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var singleHoraire in horraires)
+                {
+                    <tr>
+                        <td>@(horraires.IndexOf(singleHoraire) + 1)</td>
+                        <td>
+                            @switch (singleHoraire.Jour)
+                            {
+                                case 0:
+                                    <span>Dimanche</span>
+                                    break;
+                                case 1:
+                                    <span>Lundi</span>
+                                    break;
+                                case 2:
+                                    <span>Mardi</span>
+                                    break;
+                                case 3:
+                                    <span>Mercredi</span>
+                                    break;
+                                case 4:
+                                    <span>Jeudi</span>
+                                    break;
+                                case 5:
+                                    <span>Vendredi</span>
+                                    break;
+                                case 6:
+                                    <span>Samedi</span>
+                                    break;
+                            }
+                        </td>
+                        <td>@singleHoraire.HeureDebut</td>
+                        <td>@singleHoraire.NbHeure : @singleHoraire.NbMinute</td>
+                        <td>@singleHoraire.EleveMaxInscription</td>
+                        <td>
+                            @if (!ViewBag.IsTutor)
+                            {
+                                @if (!singleHoraire.Demandes
+                                .Any(e => e.IdentifiantHoraire == singleHoraire.IdentityKey
+                                && e.IdentifiantUtilisateur == ViewBag.UserId))
+                                {
+                                    <partial name="_Application.cshtml"
+                                             model="new Demandes() { IdentifiantHoraire = singleHoraire.IdentityKey, IdentifiantUtilisateur = ViewBag.UserId }" />
+
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </dd>
+</dl>
+<div>
+    <a asp-action=" EditHoraire" asp-route-id="@Model.IdentityKey">
+        Modifier
+    </a>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#horaire-table').DataTable();
+    });
+</script>

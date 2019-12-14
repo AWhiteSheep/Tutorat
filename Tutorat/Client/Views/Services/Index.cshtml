@@ -1,0 +1,89 @@
+﻿@model IEnumerable<Client.Data.Services>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Ajout d'un nouveau service</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Titre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tuteur.UserName)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Titre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Tuteur.UserName)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.IdentityKey">Modifier</a> |
+                    <a asp-action="Horaire" asp-route-id="@item.IdentityKey" data-ajax="true"
+                       data-ajax-method="GET" data-ajax-mode="replace" data-ajax-success="$('#dialog-form').dialog('open');"
+                       data-ajax-update="#dialog-form" class="btn btn-link"> Voir l'horaire </a>
+                    <a asp-action="Delete" asp-route-id="@item.IdentityKey">Supprimer</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="row col-10">
+    <div id="dialog-form" title="Information sur le service"></div>
+</div>
+
+
+<style>
+    td, th {
+        padding: 0 10px;
+    }
+    .ui-dialog {
+        position: initial !important;
+        height: fit-content !important;
+        width: fit-content  !important;
+        margin: -220px auto;
+    }
+    .ui-dialog .ui-dialog-content {
+        background: white !important;
+        background-color: white !important;
+    }
+</style>
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            formDialog = $("#dialog-form").dialog({
+                autoOpen: false,
+                show: {
+                    effect: "blind",
+                    duration: 500
+                },
+                hide: {
+                    effect: "explode",
+                    duration: 500
+                }
+            });
+        });
+    </script>
+}

@@ -47,10 +47,10 @@ namespace Client.Data
                     .IsUnique()
                     .HasFilter("([NormalizedUserName] IS NOT NULL)");
             });
-
             modelBuilder.Entity<Demandes>(entity =>
             {
-                entity.HasKey(e => new { e.IdentifiantUtilisateur, e.IdentifiantHoraire });
+                entity.HasKey(e => new { e.IdentifiantUtilisateur, e.IdentifiantHoraire })
+                    .HasName("PK__Demandes");
 
                 entity.Property(e => e.DateCreated).HasDefaultValueSql("(getdate())");
 
@@ -58,9 +58,16 @@ namespace Client.Data
 
                 entity.Property(e => e.Notified).HasDefaultValueSql("((0))");
 
+                entity.HasOne(d => d.IdentifiantHoraireNavigation)
+                    .WithMany(p => p.Demandes)
+                    .HasForeignKey(d => d.IdentifiantHoraire)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Demandes__Identifianthoraire");
+
                 entity.HasOne(d => d.IdentifiantUtilisateurNavigation)
                     .WithMany(p => p.Demandes)
                     .HasForeignKey(d => d.IdentifiantUtilisateur)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__Demandes__Identi__37A5467C");
             });
 
@@ -77,7 +84,8 @@ namespace Client.Data
 
             modelBuilder.Entity<Inscriptions>(entity =>
             {
-                entity.HasKey(e => new { e.IdentifiantDemandeur, e.IdentifiantHoraire });
+                entity.HasKey(e => new { e.IdentifiantDemandeur, e.IdentifiantHoraire })
+                    .HasName("PK__Inscriptions");
 
                 entity.Property(e => e.AcceptedDate).HasDefaultValueSql("(getdate())");
 
