@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29424.173
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Tutorat.Sql", "Tutorat.Sql\Tutorat.Sql.sqlproj", "{66BDE69B-319C-4F11-B7BB-28CA93A3473E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{92FB4C66-668F-48CB-AD19-689D9A9C5C8B}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Tutorat.Core", "Tutorat.Core\Tutorat.Core.sqlproj", "{71415F40-A76C-4DE7-8E3C-49FB9F8D8056}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,12 +13,16 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{66BDE69B-319C-4F11-B7BB-28CA93A3473E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{66BDE69B-319C-4F11-B7BB-28CA93A3473E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{66BDE69B-319C-4F11-B7BB-28CA93A3473E}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{66BDE69B-319C-4F11-B7BB-28CA93A3473E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{66BDE69B-319C-4F11-B7BB-28CA93A3473E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{66BDE69B-319C-4F11-B7BB-28CA93A3473E}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{92FB4C66-668F-48CB-AD19-689D9A9C5C8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92FB4C66-668F-48CB-AD19-689D9A9C5C8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92FB4C66-668F-48CB-AD19-689D9A9C5C8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92FB4C66-668F-48CB-AD19-689D9A9C5C8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71415F40-A76C-4DE7-8E3C-49FB9F8D8056}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71415F40-A76C-4DE7-8E3C-49FB9F8D8056}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71415F40-A76C-4DE7-8E3C-49FB9F8D8056}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{71415F40-A76C-4DE7-8E3C-49FB9F8D8056}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71415F40-A76C-4DE7-8E3C-49FB9F8D8056}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71415F40-A76C-4DE7-8E3C-49FB9F8D8056}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
