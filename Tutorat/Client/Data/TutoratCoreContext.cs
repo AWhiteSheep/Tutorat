@@ -53,7 +53,6 @@ namespace Client.Data
 
             modelBuilder.Entity<Comments>(entity =>
             {
-                entity.Property(e => e.PostedDateTime).IsRowVersion();
 
                 entity.HasOne(d => d.Poster)
                     .WithMany(p => p.Comments)

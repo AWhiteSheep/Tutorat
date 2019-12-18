@@ -1,4 +1,6 @@
 ﻿@model IEnumerable<Client.Data.Services>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<AspNetUsers> _user
 
 @{
     ViewData["Title"] = "Index";
@@ -43,6 +45,12 @@
                        data-ajax-method="GET" data-ajax-mode="replace" data-ajax-success="$('#dialog-form').dialog('open');"
                        data-ajax-update="#dialog-form" class="btn btn-link"> Voir l'horaire </a>
                     <a asp-action="Delete" asp-route-id="@item.IdentityKey">Supprimer</a>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a asp-controller="Comments" asp-action="GetComments" asp-route-ServiceId="@item.IdentityKey"
+                           data-ajax="true" data-ajax-method="GET" data-ajax-mode="replace" data-ajax-success="$('#ServiceId').val('@item.IdentityKey')"
+                           data-ajax-update="#comments" data-toggle="modal" data-target="#dialogComments" role="button">Commentaires</a>
+                    }
                 </td>
             </tr>
         }
@@ -51,39 +59,64 @@
 <div class="row col-10">
     <div id="dialog-form" title="Information sur le service"></div>
 </div>
+<div class="modal fade" id="dialogComments">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content uk-responsive-height flex-fill">
+            <div class="modal-header">
+                <div class="modal-body justify-content-center">
+                    <button data-toggle="collapse" data-target="#newComment" class="btn btn-outline-dark">Ajouter un commentaire</button>
+                    <div class="collapse uk-align-center" width="100%" id="newComment">
+                        <form style="width:100%" method="post" asp-controller="Comments" asp-action="Create">
+                            <input hidden name="PosterId" value="@_user.GetUserId(User)" />
+                            <input id="ServiceId" hidden name="ServiceId" value="" />
+                            <textarea class="input form-control" required name="CommentText" placeholder="Entrez votre commentaire"></textarea>
+                            <button type="submit" class="btn btn-outline-success">Soumettre</button>
+                        </form>
+                    </div>
+                    <hr class="bcSeparator" />
+                    <div id="comments" style="overflow-y:scroll">
+
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
-<style>
-    td, th {
-        padding: 0 10px;
-    }
-    .ui-dialog {
-        position: initial !important;
-        height: fit-content !important;
-        width: fit-content  !important;
-        margin: -220px auto;
-    }
-    .ui-dialog .ui-dialog-content {
-        background: white !important;
-        background-color: white !important;
-    }
-</style>
+    <style>
+        td, th {
+            padding: 0 10px;
+        }
+
+        .ui-dialog {
+            position: initial !important;
+            height: fit-content !important;
+            width: fit-content !important;
+            margin: -220px auto;
+        }
+
+            .ui-dialog .ui-dialog-content {
+                background: white !important;
+                background-color: white !important;
+            }
+    </style>
 
 
-@section Scripts{
-    <script>
-        $(document).ready(function () {
-            formDialog = $("#dialog-form").dialog({
-                autoOpen: false,
-                show: {
-                    effect: "blind",
-                    duration: 500
-                },
-                hide: {
-                    effect: "explode",
-                    duration: 500
-                }
+    @section Scripts{
+        <script>
+            $(document).ready(function () {
+                formDialog = $("#dialog-form").dialog({
+                    autoOpen: false,
+                    show: {
+                        effect: "blind",
+                        duration: 500
+                    },
+                    hide: {
+                        effect: "explode",
+                        duration: 500
+                    }
+                });
             });
-        });
-    </script>
-}
+        </script>
+    }

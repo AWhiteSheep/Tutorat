@@ -33,6 +33,14 @@ namespace Client.Controllers
             return View(await tutoratCoreContext.ToListAsync());
         }
 
+        public async Task<IActionResult> FilteredServices(int Typecode)
+        {
+            var services = await _context.Services.Where(s => s.ServiceTypeCode == Typecode)
+                                                    .ToListAsync();
+
+            return PartialView("_FilteredServices", services);
+        }
+
         // GET: Services/Horaire/5
         public async Task<IActionResult> Horaire(int? id)
         {
@@ -106,6 +114,11 @@ namespace Client.Controllers
             {
                 return NotFound();
             }
+
+            List<Comments> Comments = await _context.Comments.Where(c => c.ServiceId == id)
+                                                                .ToListAsync();
+
+            ViewBag.Comments = Comments;
 
             return PartialView("_Horaire", services);
         }

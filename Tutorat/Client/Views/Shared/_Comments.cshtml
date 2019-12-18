@@ -1,0 +1,26 @@
+﻿@model IEnumerable<Client.Data.Comments>
+
+@{
+    bool canDelete = true;
+}
+
+@foreach (var item in Model) {
+    <hr class="bcSeparator" />
+        <div class="row">
+            <div class="col-md-6 pull-left">
+                <strong>@item.Poster.UserName</strong>
+            </div>
+            <div class="col-md-4 pull-right">
+                @item.PostedDateTime.Date
+            </div>
+            <div class="col-md-2">
+                @if (canDelete)
+                {
+                    <a class="btn btn-circle" href="Comments/DeleteComments/id=@item.Id"><i class="uk-icon-trash"></i></a>
+                }
+            </div>
+        </div>
+        <div class="text-body">
+            @item.CommentText
+        </div>
+}

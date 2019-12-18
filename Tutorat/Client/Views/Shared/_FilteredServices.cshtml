@@ -1,0 +1,50 @@
+﻿@model IEnumerable<Client.Data.Services>
+
+<table class="table table-borderless">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Titre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ServiceTypeCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tuteur)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Titre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ServiceTypeCode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Tuteur.Id)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IdentityKey">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.IdentityKey">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.IdentityKey">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

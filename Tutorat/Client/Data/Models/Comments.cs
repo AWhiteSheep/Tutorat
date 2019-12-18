@@ -17,7 +17,7 @@ namespace Client.Data
         [Column(TypeName = "ntext")]
         public string CommentText { get; set; }
         [Required]
-        public byte[] PostedDateTime { get; set; }
+        public DateTime PostedDateTime { get; set; }
 
         [ForeignKey(nameof(PosterId))]
         [InverseProperty(nameof(AspNetUsers.Comments))]
