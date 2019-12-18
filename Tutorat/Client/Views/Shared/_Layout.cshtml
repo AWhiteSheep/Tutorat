@@ -10,22 +10,25 @@
     <!-- Fonts -->
     <script src="https://kit.fontawesome.com/50510c8db2.js" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous">
     <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
+        <!-- début de la navigation -->
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow">
+            <div>
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Client</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    <!-- partiel pour le login de identity -->
                     <partial name="_LoginPartial" />
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Accueil</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Services" asp-action="Index">Les services</a>
@@ -41,10 +44,13 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+
+    <!-- Footer -->
+    <footer class="py-5 border-top footer text-muted">
         <div class="container">
-            &copy; 2019 - Client - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <p class="m-0 text-center text-dark">Copyright &copy; Yan Ha Routhier-Chevrier &amp; Alexandre Côté 2019</p>
         </div>
+        <!-- /.container -->
     </footer>
 
     <!--Jquery et scripts-->

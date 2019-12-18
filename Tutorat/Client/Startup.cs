@@ -33,8 +33,13 @@ namespace Client
                     // connectionn string
                     Configuration.GetConnectionString("DefaultConnection")));
             // ajout de l'identity asp uases fait et ficelé
-            services.AddDefaultIdentity<AspNetUsers>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddDefaultUI()
+            services.AddDefaultIdentity<AspNetUsers>(options => {
+                    options.Password.RequireDigit = false;
+                    options.Password.RequiredLength = 4;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = false;
+                    options.SignIn.RequireConfirmedAccount = false;
+                }).AddDefaultUI()
                 .AddEntityFrameworkStores<TutoratCoreContext>();
             // ajout des controlleurs et des views comme service
             services.AddControllersWithViews();
