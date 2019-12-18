@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Client.Data;
 using Microsoft.AspNetCore.Identity;
 using Client.Data.Authorize;
+using Client.Data.Models;
 
 namespace Client.Controllers
 {

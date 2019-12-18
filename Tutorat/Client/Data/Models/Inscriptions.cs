@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Client.Data
+namespace Client.Data.Models
 {
     public partial class Inscriptions
     {

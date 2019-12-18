@@ -12,6 +12,7 @@ using Client.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Client.Data.Models;
 
 namespace Client
 {

@@ -1,13 +1,11 @@
 ﻿using System;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Client.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Client.Data;
 
 namespace Client.Data
 {
-    public partial class TutoratCoreContext : IdentityDbContext<AspNetUsers, IdentityRole, string>
+    public partial class TutoratCoreContext : DbContext
     {
         public TutoratCoreContext()
         {
@@ -17,8 +15,10 @@ namespace Client.Data
             : base(options)
         {
         }
+
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
         public virtual DbSet<Categories> Categories { get; set; }
+        public virtual DbSet<Comments> Comments { get; set; }
         public virtual DbSet<Demandes> Demandes { get; set; }
         public virtual DbSet<Horraire> Horraire { get; set; }
         public virtual DbSet<Inscriptions> Inscriptions { get; set; }
@@ -30,18 +30,15 @@ namespace Client.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Tutorat.Core;Integrated Security=True;Connect Timeout=60;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+                optionsBuilder.UseSqlServer("name=DefaultConnection");
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // fait le model creating du parent pour cet les qualificatif de l'utilisateur identity
-            base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<AspNetUsers>(entity =>
             {
-                entity.HasKey(e => new { e.Id });
                 entity.HasIndex(e => e.NormalizedEmail)
                     .HasName("EmailIndex");
 
@@ -50,6 +47,24 @@ namespace Client.Data
                     .IsUnique()
                     .HasFilter("([NormalizedUserName] IS NOT NULL)");
             });
+
+            modelBuilder.Entity<Comments>(entity =>
+            {
+                entity.Property(e => e.PostedDateTime).IsRowVersion();
+
+                entity.HasOne(d => d.Poster)
+                    .WithMany(p => p.Comments)
+                    .HasForeignKey(d => d.PosterId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Comments_AspNetUsers");
+
+                entity.HasOne(d => d.Service)
+                    .WithMany(p => p.Comments)
+                    .HasForeignKey(d => d.ServiceId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Comments_Services");
+            });
+
             modelBuilder.Entity<Demandes>(entity =>
             {
                 entity.HasKey(e => new { e.IdentifiantUtilisateur, e.IdentifiantHoraire })
@@ -82,7 +97,7 @@ namespace Client.Data
             modelBuilder.Entity<Horraire>(entity =>
             {
                 entity.HasKey(e => e.IdentityKey)
-                    .HasName("PK__Horraire__796424B814746E7A");
+                    .HasName("PK__Horraire__796424B8FB8A2753");
 
                 entity.HasOne(d => d.Service)
                     .WithMany(p => p.Horraire)
@@ -136,19 +151,21 @@ namespace Client.Data
                     .WithMany(p => p.ServiceCategorie)
                     .HasForeignKey(d => d.CategoryId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ServiceCa__Categ__5441852A");
+                    .HasConstraintName("FK__ServiceCa__Categ__6C190EBB");
 
                 entity.HasOne(d => d.Service)
                     .WithMany(p => p.ServiceCategorie)
                     .HasForeignKey(d => d.ServiceId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ServiceCa__Servi__534D60F1");
+                    .HasConstraintName("FK__ServiceCa__Servi__6B24EA82");
             });
 
             modelBuilder.Entity<Services>(entity =>
             {
                 entity.HasKey(e => e.IdentityKey)
                     .HasName("PK__Services__796424B83E787365");
+
+                entity.Property(e => e.ServiceTypeCode).HasDefaultValueSql("((1))");
 
                 entity.HasOne(d => d.Tuteur)
                     .WithMany(p => p.Services)
@@ -161,7 +178,5 @@ namespace Client.Data
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-
-        public DbSet<Client.Data.Roles> Roles { get; set; }
     }
 }
