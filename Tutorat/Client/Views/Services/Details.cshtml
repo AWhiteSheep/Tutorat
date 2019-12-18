@@ -1,13 +1,15 @@
 ﻿@model Client.Data.Services
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<AspNetUsers> _user
 
 @{
     int ServiceId = Model.IdentityKey;
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1><label asp-for="@(Model.Titre)">@Model.Titre</label></h1>
 
-<div>
+<div class="container p-5 shadow">
     <h4>Services</h4>
     <hr />
     <dl class="row">
@@ -37,19 +39,28 @@
         </dd>
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.IdentityKey">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<hr class="bcSeparator" />
+<div class="container p-5 shadow">
+    <button data-toggle="collapse" data-target="#newMessage" class="btn btn-outline-dark">Envoyer un message au créateur</button>
+    <div class="collapse uk-align-center" width="100%" id="newMessage">
+        <form style="width:100%" method="post" asp-controller="Comments" asp-action="Create">
+            <input hidden name="PosterId" value="@_user.GetUserId(User)" />
+            <input id="ServiceId" hidden name="ServiceId" value="" />
+            <textarea class="input form-control" required name="CommentText" placeholder="Entrez votre commentaire"></textarea>
+            <button type="submit" class="btn btn-outline-success">Soumettre</button>
+        </form>
+    </div>
 </div>
 
-<a data-ajax="true"
-   data-ajax-method="get"
-   data-ajax-url="Comments/GetComments?ServiceId=@ServiceId"
-   data-ajax-mode="replace"
-   data-ajax-update="#Comments"
-   class="btn btn-info">Afficher les commentaires</a>
+<hr class="bcSeparator" />
 
-<div id="Comments" class="container">
+<div class="container shadow p-5">
+    <a asp-controller="Comments" asp-action="GetComments" asp-route-ServiceId="@Model.IdentityKey"
+       data-ajax="true" data-ajax-method="GET" data-ajax-mode="replace"
+       data-ajax-update="#comments" role="button">Afficher les commentaires</a>
 
+    <div id="comments" class="container">
+
+    </div>
 </div>
 
