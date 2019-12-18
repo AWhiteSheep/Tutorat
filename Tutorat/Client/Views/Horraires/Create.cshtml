@@ -1,20 +1,21 @@
 ﻿@model Client.Data.Horraire
+@using Syncfusion.EJ2.Schedule
+
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Plage horaire";
 }
 
-<h1>Create</h1>
-
-<h4>Horraire</h4>
+<h4>Création d'une plage horaire</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input hidden readonly asp-for="Service.IdentityKey" class ="form-control" value="@(((Services)ViewBag.service).IdentityKey)" />
             <div class="form-group">
-                <label asp-for="ServiceId" class="control-label"></label>
-                <select asp-for="ServiceId" class ="form-control" asp-items="ViewBag.ServiceId"></select>
+                <label asp-for="Service.Titre" class="control-label"></label>
+                <input readonly asp-for="Service.Titre" class ="form-control" value="@(((Services)ViewBag.service).Titre)" />
             </div>
             <div class="form-group">
                 <label asp-for="Jour" class="control-label"></label>
@@ -23,22 +24,22 @@
             </div>
             <div class="form-group">
                 <label asp-for="HeureDebut" class="control-label"></label>
-                <input asp-for="HeureDebut" class="form-control" />
+                <input type="time" asp-for="HeureDebut" class="form-control" />
                 <span asp-validation-for="HeureDebut" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="NbHeure" class="control-label"></label>
-                <input asp-for="NbHeure" class="form-control" />
+                <input min="0" step="1" max="12" asp-for="NbHeure" class="form-control" />
                 <span asp-validation-for="NbHeure" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="NbMinute" class="control-label"></label>
-                <input asp-for="NbMinute" class="form-control" />
+                <input  min="0" step="30" max="59" asp-for="NbMinute" class="form-control" />
                 <span asp-validation-for="NbMinute" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="EleveMaxInscription" class="control-label"></label>
-                <input asp-for="EleveMaxInscription" class="form-control" />
+                <input min="0" asp-for="EleveMaxInscription" class="form-control" />
                 <span asp-validation-for="EleveMaxInscription" class="text-danger"></span>
             </div>
             <div class="form-group">

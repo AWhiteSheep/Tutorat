@@ -181,6 +181,6 @@ namespace Client.Data
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
-        public DbSet<Client.Data.Roles> Roles { get; set; }
+        public new DbSet<Client.Data.Roles> Roles { get; set; }
     }
 }

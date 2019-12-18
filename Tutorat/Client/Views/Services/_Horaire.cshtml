@@ -100,9 +100,14 @@
     </dd>
 </dl>
 <div>
-    <a asp-action="EditHoraire" asp-route-id="@Model.IdentityKey">
-        Modifier
-    </a>
+
+
+    @if (ViewBag.IsTutor)
+    {
+        <a asp-action="EditHoraire" asp-route-id="@Model.IdentityKey">
+            Modifier
+        </a>
+    }
 </div>
 
 <script>
