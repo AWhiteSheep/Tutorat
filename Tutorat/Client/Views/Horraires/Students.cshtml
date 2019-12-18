@@ -2,13 +2,11 @@
 
 @{
     ViewData["Title"] = "Students";
+    List<Inscriptions> inscriptions = Model.ToList();
 }
 
-<h1>Students</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<h4 class="mt-4">Inscriptions</h4>
+<hr />
 <table class="table">
     <thead>
         <tr>
@@ -19,16 +17,17 @@
                 @Html.DisplayNameFor(model => model.EndDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IdentifiantDemandeurNavigation)
+                @Html.DisplayNameFor(model => model.First().IdentifiantDemandeurNavigation.UserName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Notification)
+                @Html.DisplayNameFor(model => model.IdentifiantDemandeurNavigation.Email)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in inscriptions)
+{
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.AcceptedDate)
@@ -37,17 +36,40 @@
                 @Html.DisplayFor(modelItem => item.EndDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IdentifiantDemandeurNavigation.Id)
+                @Html.DisplayFor(modelItem => item.IdentifiantDemandeurNavigation.UserName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Notification.IdentifiantUtilisateurReceiver)
+                @Html.DisplayFor(modelItem => item.IdentifiantDemandeurNavigation.Email)
             </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+        </tr>
+        <tr>
+            <td colspan="5">
+                <form id="form-@inscriptions.IndexOf(item)" class="col-4 row">
+                    <input hidden name="studenId" />
+                    <div class="input-group col-12">
+                        <label class="label-info">Message de communication</label>
+                        <textarea name="communication" rows="4" class="form-control"></textarea>                        
+                    </div>
+                    <div class="input-group col-12">
+                        <button onclick="sendSubmit('#form-@inscriptions.IndexOf(item)')" class="btn btn-info">Communiquer</button>
+                    </div>
+                </form>
             </td>
         </tr>
 }
     </tbody>
 </table>
+
+<script>
+    sendSubmit => function (formId) {
+        e.preventDefault();
+        $.ajax({
+            type: 'post',
+            url: '/Communication/Send',
+            data: $(formId).serialize(),
+            success: function (data) {
+                console.log(data);
+            }
+        });
+    };
+</script>

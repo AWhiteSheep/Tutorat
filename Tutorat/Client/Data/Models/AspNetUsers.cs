@@ -11,6 +11,8 @@ namespace Client.Data
         public AspNetUsers()
         {
             Comments = new HashSet<Comments>();
+            CommunicationFromUserNavigation = new HashSet<Communication>();
+            CommunicationSendToNavigation = new HashSet<Communication>();
             Demandes = new HashSet<Demandes>();
             Inscriptions = new HashSet<Inscriptions>();
             NotificationsIdentifiantUtilisateurReceiverNavigation = new HashSet<Notifications>();
@@ -20,6 +22,10 @@ namespace Client.Data
 
         [InverseProperty("Poster")]
         public virtual ICollection<Comments> Comments { get; set; }
+        [InverseProperty(nameof(Communication.FromUserNavigation))]
+        public virtual ICollection<Communication> CommunicationFromUserNavigation { get; set; }
+        [InverseProperty(nameof(Communication.SendToNavigation))]
+        public virtual ICollection<Communication> CommunicationSendToNavigation { get; set; }
         [InverseProperty("IdentifiantUtilisateurNavigation")]
         public virtual ICollection<Demandes> Demandes { get; set; }
         [InverseProperty("IdentifiantDemandeurNavigation")]
