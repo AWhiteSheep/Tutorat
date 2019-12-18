@@ -138,9 +138,13 @@
     <Build Include="dbo\Tables\Demandes.sql" />
     <Build Include="dbo\Tables\Categories.sql" />
     <Build Include="dbo\Tables\ServiceCategorie.sql" />
+    <Build Include="dbo\Tables\Comments.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="profils\Tutorat.Core.publish.xml" />
     <None Include="profils\PeerTutoring.publish.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="Tutorat.Core.refactorlog" />
   </ItemGroup>
 </Project>

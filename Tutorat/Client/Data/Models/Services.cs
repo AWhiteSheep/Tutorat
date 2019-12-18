@@ -9,6 +9,7 @@ namespace Client.Data
     {
         public Services()
         {
+            Comments = new HashSet<Comments>();
             Horraire = new HashSet<Horraire>();
             ServiceCategorie = new HashSet<ServiceCategorie>();
         }
@@ -23,10 +24,15 @@ namespace Client.Data
         [Required]
         [Column(TypeName = "text")]
         public string Description { get; set; }
+        [Column(TypeName = "money")]
+        public decimal? Price { get; set; }
+        public int? ServiceTypeCode { get; set; }
 
         [ForeignKey(nameof(TuteurId))]
         [InverseProperty(nameof(AspNetUsers.Services))]
         public virtual AspNetUsers Tuteur { get; set; }
+        [InverseProperty("Service")]
+        public virtual ICollection<Comments> Comments { get; set; }
         [InverseProperty("Service")]
         public virtual ICollection<Horraire> Horraire { get; set; }
         [InverseProperty("Service")]
