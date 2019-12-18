@@ -1,7 +1,8 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
-    string[] _Categories = (string[])ViewData["Categories"];
-    string[] _Services = (string[])ViewData["Services"];
+    Categories[] _Categories = (Categories[])ViewData["Categories"];
+    List<Services> _Services = (List<Services>)ViewData["Services"];
+    string _active_category = (string)ViewData["ActiveCategory"];
 }
 
 <!-- grande affichage qui sert de bar de recherche pour un service donné -->
@@ -34,7 +35,7 @@
                     @foreach (var categorie in _Categories)
                     {
                         <!-- load de tous les services disponibles comme choix et filtrage-->
-                        <a href="/Home/@categorie.Trim()" class="list-group-item">@categorie.Trim()</a>
+                        <a href="/Home/Index/@categorie.Name.Trim()" class="list-group-item">@categorie.Name</a>
                     }
                 }else
                 {
@@ -85,13 +86,12 @@
                         <!-- Item frame -->
                         <div class="col-lg-4 col-md-6 mb-4">
                             <div class="card h-100">
-                                <a href="#"><img class="card-img-top" src="@service" alt=""></a>
                                 <div class="card-body">
                                     <h4 class="card-title">
-                                        <a href="#">Item Six</a>
+                                        <a href="#">@service.Titre</a>
                                     </h4>
                                     <h5>$24.99</h5>
-                                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet numquam aspernatur!</p>
+                                    <p class="card-text">@service.Description</p>
                                 </div>
                                 <div class="card-footer">
                                     <small class="text-muted">&#9733; &#9733; &#9733; &#9733; &#9734;</small>
