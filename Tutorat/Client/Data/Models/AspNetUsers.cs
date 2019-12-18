@@ -10,10 +10,6 @@ namespace Client.Data
     {
         public AspNetUsers()
         {
-            AspNetUserClaims = new HashSet<AspNetUserClaims>();
-            AspNetUserLogins = new HashSet<AspNetUserLogins>();
-            AspNetUserRoles = new HashSet<AspNetUserRoles>();
-            AspNetUserTokens = new HashSet<AspNetUserTokens>();
             Comments = new HashSet<Comments>();
             Demandes = new HashSet<Demandes>();
             Inscriptions = new HashSet<Inscriptions>();
