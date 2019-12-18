@@ -40,7 +40,9 @@ namespace Client
                     options.Password.RequireUppercase = false;
                     options.SignIn.RequireConfirmedAccount = false;
                 }).AddDefaultUI()
-                .AddEntityFrameworkStores<TutoratCoreContext>();
+                .AddEntityFrameworkStores<TutoratCoreContext>()
+                .AddDefaultTokenProviders(); ;
+
             // ajout des controlleurs et des views comme service
             services.AddControllersWithViews();
             // ajout de la notation razor dans la page comme service
@@ -78,5 +80,46 @@ namespace Client
                 endpoints.MapRazorPages();
             });
         }
+
+        private async Task CreateRoles(IServiceProvider serviceProvider, params string[] roleNames)
+        {
+            //initialisation du roleManager et userManager 
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+            IdentityResult roleResult;
+            // boucle pour la création des roles
+            foreach (var roleName in roleNames)
+            {
+                var roleExist = await roleManager.RoleExistsAsync(roleName);
+                if (!roleExist)
+                {
+                    roleResult = await roleManager.CreateAsync(new IdentityRole(roleName));
+                }
+            }
+
+
+        }
+
+        private async Task CreateUser(IServiceProvider serviceProvider, string userName, string password, string roleName)
+        {
+            //initialisation du roleManager et userManager 
+            var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+            //Vérifier si l'usager admin n'est pas déja crée
+            var _user = await userManager.FindByEmailAsync(userName);
+
+            if (_user == null)
+            {
+                var newUser = new IdentityUser(userName);
+                var createPowerUser = await userManager.CreateAsync(newUser, password);
+                if (createPowerUser.Succeeded)
+                {
+                    //associer l'usager au role "Admin"
+                    await userManager.AddToRoleAsync(newUser, roleName);
+
+                }
+            }
+        }
+
     }
 }
