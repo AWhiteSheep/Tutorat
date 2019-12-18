@@ -19,6 +19,7 @@ namespace Client.Data
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
         public virtual DbSet<Categories> Categories { get; set; }
         public virtual DbSet<Comments> Comments { get; set; }
+        public virtual DbSet<Communication> Communication { get; set; }
         public virtual DbSet<Demandes> Demandes { get; set; }
         public virtual DbSet<Horraire> Horraire { get; set; }
         public virtual DbSet<Inscriptions> Inscriptions { get; set; }
@@ -63,8 +64,26 @@ namespace Client.Data
                 entity.HasOne(d => d.Service)
                     .WithMany(p => p.Comments)
                     .HasForeignKey(d => d.ServiceId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Comments_Services");
+            });
+
+            modelBuilder.Entity<Communication>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+
+                entity.HasOne(d => d.FromUserNavigation)
+                    .WithMany(p => p.CommunicationFromUserNavigation)
+                    .HasForeignKey(d => d.FromUser)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Communication_AspNetUsers");
+
+                entity.HasOne(d => d.SendToNavigation)
+                    .WithMany(p => p.CommunicationSendToNavigation)
+                    .HasForeignKey(d => d.SendTo)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Communication_AspNetUsers1");
             });
 
             modelBuilder.Entity<Demandes>(entity =>

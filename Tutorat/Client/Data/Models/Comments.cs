@@ -16,7 +16,7 @@ namespace Client.Data
         [Required]
         [Column(TypeName = "ntext")]
         public string CommentText { get; set; }
-        [Required]
+        [Column(TypeName = "datetime")]
         public DateTime PostedDateTime { get; set; }
 
         [ForeignKey(nameof(PosterId))]
