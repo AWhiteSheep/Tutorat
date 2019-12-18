@@ -40,6 +40,7 @@
                     @Html.DisplayFor(modelItem => item.Tuteur.UserName)
                 </td>
                 <td>
+                    <a asp-action="Details" asp-route-id="@item.IdentityKey">Détails</a>
                     <a asp-action="Edit" asp-route-id="@item.IdentityKey">Modifier</a> |
                     <a asp-action="Horaire" asp-route-id="@item.IdentityKey" data-ajax="true"
                        data-ajax-method="GET" data-ajax-mode="replace" data-ajax-success="$('#dialog-form').dialog('open');"

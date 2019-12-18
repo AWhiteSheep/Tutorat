@@ -46,6 +46,23 @@ namespace Client.Controllers
             return PartialView("_FilteredServices", services);
         }
 
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var service = await _context.Services.FirstOrDefaultAsync(s => s.IdentityKey == id);
+
+            if (service == null)
+            {
+                return NotFound();
+            }
+
+            return View("Details", service);
+        }
+
         // GET: Services/Horaire/5
         public async Task<IActionResult> Horaire(int? id)
         {
@@ -111,7 +128,7 @@ namespace Client.Controllers
                                     .Reference(h => h.Service)
                                     .LoadAsync();
 
-                SendApplicationEmail(application);
+                //SendApplicationEmail(application);
 
                 return RedirectToAction(nameof(Index));
             }

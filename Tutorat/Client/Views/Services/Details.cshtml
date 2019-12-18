@@ -43,10 +43,10 @@
 <div class="container p-5 shadow">
     <button data-toggle="collapse" data-target="#newMessage" class="btn btn-outline-dark">Envoyer un message au créateur</button>
     <div class="collapse uk-align-center" width="100%" id="newMessage">
-        <form style="width:100%" method="post" asp-controller="Comments" asp-action="Create">
-            <input hidden name="PosterId" value="@_user.GetUserId(User)" />
-            <input id="ServiceId" hidden name="ServiceId" value="" />
-            <textarea class="input form-control" required name="CommentText" placeholder="Entrez votre commentaire"></textarea>
+        <form style="width:100%" method="post" asp-controller="Communications" asp-action="PostCommunication">
+            <input hidden name="FromUser" value="@_user.GetUserId(User)" />
+            <input id="ServiceId" hidden name="SendTo" value="@Model.TuteurId" />
+            <textarea class="input form-control" required name="Text" placeholder="Entrez votre commentaire"></textarea>
             <button type="submit" class="btn btn-outline-success">Soumettre</button>
         </form>
     </div>
@@ -57,7 +57,7 @@
 <div class="container shadow p-5">
     <a asp-controller="Comments" asp-action="GetComments" asp-route-ServiceId="@Model.IdentityKey"
        data-ajax="true" data-ajax-method="GET" data-ajax-mode="replace"
-       data-ajax-update="#comments" role="button">Afficher les commentaires</a>
+       data-ajax-update="#comments" role="button" class="btn btn-outline-dark">Afficher les commentaires</a>
 
     <div id="comments" class="container">
 

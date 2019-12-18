@@ -69,7 +69,6 @@ namespace Client.Data
 
             modelBuilder.Entity<Communication>(entity =>
             {
-                entity.HasKey(e => e.Id);
 
                 entity.HasOne(d => d.FromUserNavigation)
                     .WithMany(p => p.CommunicationFromUserNavigation)
