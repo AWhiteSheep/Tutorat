@@ -30,17 +30,55 @@
             </form>
         </li>
 
-        <!-- Nav Item - Messages -->
+        <!-- Nav Item - notification et message -->
         <li class="nav-item dropdown no-arrow mx-1">
             <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-envelope fa-fw"></i>
                 <!-- Counter - Messages -->
-                <span class="badge badge-danger badge-counter">@(notifications.Any() ? notifications.Count.ToString() : "0")</span>
+                @if (!notifications.Any())
+                {
+                    <span class="badge badge-danger badge-counter">@notifications.Count().ToString())</span>
+                }
             </a>
             <!-- Dropdown - Messages -->
             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
                 <h6 class="dropdown-header">
-                    Messagerie
+                    Notification
+                </h6>
+                @if (notifications.Any())
+                {
+                    @foreach (var notification in notifications)
+                    {
+                        <div class="dropdown-item d-flex align-items-center">
+                            <div class="dropdown-list-image mr-3">
+                                <div class="status-indicator bg-success"></div>
+                            </div>
+                            <div class="font-weight-normal">
+                                <div class="text-truncate">@notification.Message</div>
+                                @if (notification.Demandes.Any())
+                                {
+                                    <div class="small text-gray-500"> @notification.Demandes.First().DateCreated</div>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </li>
+        <!-- tab pour les communication -->
+        <li class="nav-item dropdown no-arrow mx-1">
+            <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-envelope fa-fw"></i>
+                <!-- Counter - Messages -->
+                @if (notifications.Any())
+                {
+                    <span class="badge badge-danger badge-counter">@(notifications.Count.ToString())</span>
+                }
+            </a>
+            <!-- Dropdown - Messages -->
+            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
+                <h6 class="dropdown-header">
+                    Notification
                 </h6>
                 @if (notifications.Any())
                 {
@@ -66,10 +104,10 @@
     else
     {
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">S'enregistrer</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Connexion</a>
         </li>
 
     }

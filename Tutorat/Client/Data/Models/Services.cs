@@ -10,6 +10,7 @@ namespace Client.Data
         public Services()
         {
             Horraire = new HashSet<Horraire>();
+            ServiceCategorie = new HashSet<ServiceCategorie>();
         }
 
         [Key]
@@ -28,5 +29,7 @@ namespace Client.Data
         public virtual AspNetUsers Tuteur { get; set; }
         [InverseProperty("Service")]
         public virtual ICollection<Horraire> Horraire { get; set; }
+        [InverseProperty("Service")]
+        public virtual ICollection<ServiceCategorie> ServiceCategorie { get; set; }
     }
 }

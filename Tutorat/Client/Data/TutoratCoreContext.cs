@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Client.Data;
 
 namespace Client.Data
 {
-    public partial class TutoratCoreContext : IdentityDbContext<AspNetUsers>
+    public partial class TutoratCoreContext : IdentityDbContext<AspNetUsers, IdentityRole, string>
     {
         public TutoratCoreContext()
         {
@@ -17,10 +18,12 @@ namespace Client.Data
         {
         }
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
+        public virtual DbSet<Categories> Categories { get; set; }
         public virtual DbSet<Demandes> Demandes { get; set; }
         public virtual DbSet<Horraire> Horraire { get; set; }
         public virtual DbSet<Inscriptions> Inscriptions { get; set; }
         public virtual DbSet<Notifications> Notifications { get; set; }
+        public virtual DbSet<ServiceCategorie> ServiceCategorie { get; set; }
         public virtual DbSet<Services> Services { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -58,6 +61,12 @@ namespace Client.Data
 
                 entity.Property(e => e.Notified).HasDefaultValueSql("((0))");
 
+                entity.HasOne(d => d.IdentifiantHoraireNavigation)
+                    .WithMany(p => p.Demandes)
+                    .HasForeignKey(d => d.IdentifiantHoraire)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Demandes__Identifianthoraire");
+
                 entity.HasOne(d => d.IdentifiantUtilisateurNavigation)
                     .WithMany(p => p.Demandes)
                     .HasForeignKey(d => d.IdentifiantUtilisateur)
@@ -73,7 +82,7 @@ namespace Client.Data
             modelBuilder.Entity<Horraire>(entity =>
             {
                 entity.HasKey(e => e.IdentityKey)
-                    .HasName("PK__Horraire__796424B85ED5B7FE");
+                    .HasName("PK__Horraire__796424B814746E7A");
 
                 entity.HasOne(d => d.Service)
                     .WithMany(p => p.Horraire)
@@ -118,6 +127,24 @@ namespace Client.Data
                     .HasConstraintName("FK_Notifications_RelatedAspNetUser");
             });
 
+            modelBuilder.Entity<ServiceCategorie>(entity =>
+            {
+                entity.HasKey(e => new { e.ServiceId, e.CategoryId })
+                    .HasName("PK_SERVICE_CATEGORIE");
+
+                entity.HasOne(d => d.Category)
+                    .WithMany(p => p.ServiceCategorie)
+                    .HasForeignKey(d => d.CategoryId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__ServiceCa__Categ__5441852A");
+
+                entity.HasOne(d => d.Service)
+                    .WithMany(p => p.ServiceCategorie)
+                    .HasForeignKey(d => d.ServiceId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__ServiceCa__Servi__534D60F1");
+            });
+
             modelBuilder.Entity<Services>(entity =>
             {
                 entity.HasKey(e => e.IdentityKey)
@@ -134,5 +161,7 @@ namespace Client.Data
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+        public DbSet<Client.Data.Roles> Roles { get; set; }
     }
 }

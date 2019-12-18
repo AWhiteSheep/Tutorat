@@ -33,7 +33,7 @@ namespace Client
                     // connectionn string
                     Configuration.GetConnectionString("DefaultConnection")));
             // ajout de l'identity asp uases fait et ficelé
-            services.AddDefaultIdentity<AspNetUsers>(options => {
+            services.AddIdentity<AspNetUsers, IdentityRole>(options => {
                     options.Password.RequireDigit = false;
                     options.Password.RequiredLength = 4;
                     options.Password.RequireNonAlphanumeric = false;

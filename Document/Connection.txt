@@ -1,0 +1,1 @@
+Scaffold-DbContext "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=Tutorat.Core;Integrated Security=True;Connect Timeout=60;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Data -DataAnnotations
