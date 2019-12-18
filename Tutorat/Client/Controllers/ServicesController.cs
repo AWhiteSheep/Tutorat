@@ -14,14 +14,15 @@ namespace Client.Controllers
     {
         private readonly TutoratCoreContext _context;
         private readonly UserManager<AspNetUsers> _userManager;
+        private readonly SignInManager<AspNetUsers> _signInManager;
 
-        public ServicesController(
-            TutoratCoreContext context,
-            UserManager<AspNetUsers> userManager)
+        public ServicesController(TutoratCoreContext context, UserManager<AspNetUsers> userManager, SignInManager<AspNetUsers> signInManager)
         {
-            _userManager = userManager;
             _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
+
 
         // GET: Services
         public async Task<IActionResult> Index()
@@ -98,23 +99,40 @@ namespace Client.Controllers
                 return NotFound();
             }
 
-            var services = await _context.Services
-                .Include(s => s.Tuteur)
-                .Include(h => h.Horraire)
-                .FirstOrDefaultAsync(m => m.IdentityKey == id);
+
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Redirect("/Identity/Login");
+            }
+
+
+            // elle retourne le user id
+            var userId = _userManager.GetUserId(User);
+
+            // retourner un liste des horaires reliées au service données en paramètre
+            var services = _context.Services.Include(h => h.Horraire)
+                .FirstOrDefault(v => v.TuteurId == userId && v.IdentityKey == id);
+
             if (services == null)
             {
                 return NotFound();
             }
 
-            return PartialView("_Horaire", services);
+            return View(services);
         }
 
         // GET: Services/Create
         public IActionResult Create()
         {
-            ViewData["TuteurId"] = new SelectList(_context.AspNetUsers, "Id", "Id");
-            return View();
+            if (User.Identity.IsAuthenticated)
+            {
+                ViewData["TuteurId"] = _userManager.GetUserId(User);
+                return View();
+            }
+            else 
+            {
+                return Redirect("/Home");
+            }
         }
 
         // POST: Services/Create

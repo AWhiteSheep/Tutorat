@@ -7,6 +7,19 @@ namespace Client.Data
 {
     public partial class Services
     {
+        [NotMapped]
+        public string PriceDollar
+        {
+            get
+            {
+                return Price.GetValueOrDefault(0).ToString("C");
+            }
+            set 
+            {
+                Price = decimal.Parse(value);
+            }
+        }
+
         public Services()
         {
             Comments = new HashSet<Comments>();

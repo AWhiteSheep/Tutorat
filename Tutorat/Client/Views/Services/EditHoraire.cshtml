@@ -1,0 +1,64 @@
+﻿@model Client.Data.Services
+@using Microsoft.AspNetCore.Identity;
+@using Client.Data
+@inject UserManager<AspNetUsers> _userManager
+
+@{
+    ViewData["Title"] = "EditHoraire";
+}
+
+<h4 class="mt-4">Edition de l'horaire pour le service @Model.Titre</h4>
+<a asp-controller="Horraires" asp-action="Create" asp-route-id="@Model.IdentityKey">Ajouter une nouvelle plâge horaire</a>
+<table class="table mt-4">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Horraire.FirstOrDefault().Jour)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Horraire.FirstOrDefault().HeureDebut)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Horraire.FirstOrDefault().NbHeure)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Horraire.FirstOrDefault().NbMinute)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Horraire.FirstOrDefault().EleveMaxInscription)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Horraire)
+        {
+            <tr>
+                    <td>
+                        @Html.DisplayFor(modelHoraire => item.Jour)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelHoraire => item.HeureDebut)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelHoraire => item.NbHeure)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelHoraire => item.NbMinute)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelHoraire => item.EleveMaxInscription)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.IdentityKey">Modifier</a> |
+                        <a asp-action="Delete" asp-route-id="@item.IdentityKey">Suppimer</a>
+                    </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <a asp-ajax="true" asp-ajax-url="/Horraires/Students/@item.IdentityKey">Voir les étudiants inscrits pour cette plage horaire</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

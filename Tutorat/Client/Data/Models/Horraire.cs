@@ -15,7 +15,7 @@ namespace Client.Data
         [Key]
         public int IdentityKey { get; set; }
         public int ServiceId { get; set; }
-        public int Jour { get; set; }
+        public int Jour { get; set; }        
         public TimeSpan HeureDebut { get; set; }
         public int NbHeure { get; set; }
         public int NbMinute { get; set; }
