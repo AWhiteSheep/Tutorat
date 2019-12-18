@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.1</ProjectVersion>
     <ProjectGuid>{71415f40-a76c-4de7-8e3c-49fb9f8d8056}</ProjectGuid>
-    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureV12DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
     <RootPath>
     </RootPath>
@@ -120,6 +120,7 @@
     <Folder Include="Properties" />
     <Folder Include="dbo\" />
     <Folder Include="dbo\Tables\" />
+    <Folder Include="profils\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Notifications.sql" />
@@ -140,7 +141,8 @@
     <Build Include="dbo\Tables\Comments.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Tutorat.Core.publish.xml" />
+    <None Include="profils\Tutorat.Core.publish.xml" />
+    <None Include="profils\PeerTutoring.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="Tutorat.Core.refactorlog" />
