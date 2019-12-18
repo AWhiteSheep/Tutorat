@@ -69,9 +69,7 @@ namespace Client.Data
 
             modelBuilder.Entity<Communication>(entity =>
             {
-                entity.HasNoKey();
-
-                entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
+                entity.HasKey(e => e.Id);
 
                 entity.HasOne(d => d.FromUserNavigation)
                     .WithMany(p => p.CommunicationFromUserNavigation)

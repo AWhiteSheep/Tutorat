@@ -7,8 +7,10 @@ namespace Client.Data
 {
     public partial class Communication
     {
+        [Key]
         [Required]
         public string Id { get; set; }
+        public int OrderId { get; set; }
         [Required]
         [StringLength(450)]
         public string FromUser { get; set; }
