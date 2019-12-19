@@ -11,9 +11,13 @@ using Microsoft.Exchange.WebServices.Data;
 using System.Net.Mail;
 using Microsoft.Exchange.WebServices.Autodiscover;
 using Microsoft.AspNetCore.Authorization;
+using Newtonsoft.Json;
+using Suave.Utils;
+using Microsoft.Extensions.Primitives;
 
 namespace Client.Controllers
 {
+    [Authorize]
     public class ServicesController : Controller
     {
         private readonly TutoratCoreContext _context;
@@ -30,12 +34,16 @@ namespace Client.Controllers
 
 
         // GET: Services
-        public async Task<IActionResult> Index()
-        {
+        [AllowAnonymous]
+        public async Task<IActionResult> Index(string message)
+        {            
+            message = ControllerContext.HttpContext.Request.Query.Keys.FirstOrDefault();
             // envoie à la vue les tuteurs ou tutrices et les horraires étant associé(e)s
             var tutoratCoreContext = _context.Services
                     .Include(s => s.Tuteur)
                     .Include(h => h.Horraire);
+            if (!string.IsNullOrEmpty(message))
+                ViewData["success"] = System.Net.WebUtility.UrlDecode(message);
             return View(await tutoratCoreContext.ToListAsync());
         }
 
@@ -47,6 +55,7 @@ namespace Client.Controllers
             return PartialView("_FilteredServices", services);
         }
 
+      
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -65,6 +74,8 @@ namespace Client.Controllers
         }
 
         // GET: Services/Horaire/5
+        [AllowAnonymous]
+        // permet la vue de l'horaire même déconnecté
         public async Task<IActionResult> Horaire(int? id)
         {
             if (id == null)
@@ -86,8 +97,11 @@ namespace Client.Controllers
 
             // envoit d'une booleen si l'utilisateur connecté est le propriétaire ou non
             string UserId = _userManager.GetUserId(User);
-            ViewBag.IsTutor = UserId == services.TuteurId;
-            ViewBag.UserId = UserId;
+            if (!string.IsNullOrEmpty(UserId))
+            {
+                ViewBag.IsTutor = UserId == services.TuteurId;
+                ViewBag.UserId = UserId;
+            }
 
             // revoit de la partiel
             return PartialView("_Horaire", services);
@@ -96,13 +110,12 @@ namespace Client.Controllers
         // POST: Services/Apply
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
-        public async Task<IActionResult> Apply([Bind("IdentifiantUtilisateur,IdentifiantHoraire")] Demandes application)
+        public IActionResult Apply([Bind("IdentifiantUtilisateur,IdentifiantHoraire")] Demandes application)
         {
+            string message = new string("");
             // rapporte le premier horaire afin de vérifier si l'application est vraisemblable
-            var horaireServices = await _context.Horraire
-                .FirstOrDefaultAsync(m => m.IdentityKey == application.IdentifiantHoraire);
-
+            var horaireServices = _context.Horraire
+                .First(m => m.IdentityKey == application.IdentifiantHoraire);        
             // vérifie si l'horaire de l'inscription existe dans la base de donnée
             if (horaireServices == null)
             {
@@ -112,26 +125,38 @@ namespace Client.Controllers
             // si oui ajoute l'application si valide
             if (ModelState.IsValid)
             {
-                // ajoute l'application
-                _context.Add(application);
+                // présrit la nouvelle application
+                application.DateCreated = DateTime.Now;
+                application.IdentifiantHoraire = horaireServices.IdentityKey;
 
-                // savegarde les changement 
-                await _context.SaveChangesAsync();
+                if (_context.Demandes.Any(e => e.IdentifiantHoraire == application.IdentifiantHoraire && e.IdentifiantUtilisateur == application.IdentifiantUtilisateur))
+                {
+                    message = "Vous êtes déjà inscrit.";
+                    return Redirect("/Services/Index/?"+ System.Net.WebUtility.UrlEncode(message));
+                }
+                
+                Console.WriteLine("Adding: " + application.IdentifiantUtilisateur);
+                Console.WriteLine("TO: " + application.IdentifiantHoraire);
 
-                // load la référence vers une entité lié afin de pouvoir l'accéder dans le code plus loins
-                await _context.Entry(application).Reference(a => a.IdentifiantUtilisateurNavigation)
-                                            .LoadAsync();
+                try
+                {
 
-                await _context.Entry(application).Reference(a => a.IdentifiantHoraireNavigation)
-                                                .LoadAsync();
+                    // ajoute l'application
+                    _context.Demandes.Add(application);
 
-                await _context.Entry(application.IdentifiantHoraireNavigation)
-                                    .Reference(h => h.Service)
-                                    .LoadAsync();
+                    // savegarde les changement 
+                    _context.SaveChanges();
+                }
+                catch {
+                    message = "Vous participez déjà  a un service qui à la même plage horaire, ou il y a un conflit d'horaire.";
+                    // une erreur survient si à la même heure il est inscrit à fait la demande pour la même heure
+                    return Redirect("/Services/Index/?" + System.Net.WebUtility.UrlEncode(message));
+                }
 
                 //SendApplicationEmail(application);
 
-                return RedirectToAction(nameof(Index));
+                message = "Vous êtes maintenant inscrit!";
+                return Redirect("/Services/Index/?" + System.Net.WebUtility.UrlEncode(message));
             }
 
             return Problem();
@@ -245,7 +270,7 @@ namespace Client.Controllers
             return View(services);
         }
 
-        // GET: Services/Edit/5
+        // au click de la page index pour faire la modification du service
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -259,7 +284,9 @@ namespace Client.Controllers
                 return NotFound();
             }
             // Retourne la vue pour créer continuer la création
-            ViewData["TuteurId"] = _userManager.GetUserId(User);
+            var user = await _userManager.GetUserAsync(User);
+            ViewData["UserName"] = user.Email;
+            ViewData["UserId"] = user.Id;
             return View(services);
         }
 

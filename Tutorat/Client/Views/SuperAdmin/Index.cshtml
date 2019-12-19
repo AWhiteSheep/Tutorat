@@ -3,6 +3,9 @@
 
 @{
     ViewData["Title"] = "Gestion des rôles";
+    List<AspNetUsers> users = new List<AspNetUsers>();
+    if(ViewBag.Users != null)
+        users = ViewBag.Users;
 }
 
 <p>
@@ -28,6 +31,19 @@
                     <a asp-action="Edit" asp-route-id="@item.Id">Modifier</a> |
                     <a asp-action="Details" asp-route-id="@item.Id">Détails</a> |
                     <a asp-action="Delete" asp-route-id="@item.Id">Supprimer</a>
+                </td>
+                <td>
+                    <form method="post" action="/SuperAdmin/Relate" href="/SuperAdmin/Relate">
+                        <input hidden name="roleId" value="@item.Id" />
+                        <select name="userId">
+                            <option></option>
+                            @foreach (var user in users) 
+                            {
+                                <option name="userId" value="@user.Id">@user.Email</option>
+                            }
+                        </select>
+                        <button class="btn btn-primary">Ajouter au rôle</button>
+                    </form>
                 </td>
             </tr>
         }

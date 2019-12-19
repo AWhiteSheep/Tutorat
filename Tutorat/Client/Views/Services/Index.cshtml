@@ -3,121 +3,146 @@
 @inject UserManager<AspNetUsers> _user
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Services disponibles";
+
+    // envoit d'une booleen si l'utilisateur connecté est le propriétaire ou non
+    string UserId = _user.GetUserId(User);
+    if (!string.IsNullOrEmpty(UserId))
+    {
+        ViewBag.UserId = UserId; // valeur de l'utilisateur connecté
+    }
+
+    string success = (string)ViewBag.success;
 }
 
-<h1>Index</h1>
+@if (!string.IsNullOrEmpty(success))
+{
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <strong>Holy guacamole! </strong> @((string)ViewBag.success)
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
 
-<p>
-    <a asp-action="Create">Ajout d'un nouveau service</a>
-</p>
-<table class="table">
+<h1 class="mt-4">Affichage des services disponibles</h1>
+
+@*l'action ne s'affiche seulement si l'utilisateur est connecté soit si le numéro d'utilisateuer n'est pas null*@
+@if (ViewBag.UserId != null)
+{<p><a asp-action="Create">Ajout d'un nouveau service</a></p>}
+else
+{<a href="/Identity/Account/Login">Veuillez vous connecter pour créer un service</a>}
+
+@*affiche en table tous les services qui sont disponible*@
+<table id="tableServicesDisponible" class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Titre)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Tuteur.UserName)
-            </th>
+            <th>@Html.DisplayNameFor(model => model.Titre)</th>
+            <th>@Html.DisplayNameFor(model => model.Description)</th>
+            <th>@Html.DisplayNameFor(model => model.Tuteur.UserName)</th>
             <th></th>
         </tr>
     </thead>
+    <!-- footer de la table, juste ou dessous de la table donnée -->
+    <tfoot><tr><th colspan="4"><label style="color : var(--memory)">Tables des services disponibles</label></th></tr></tfoot>
     <tbody>
+        @*loop sur le enumerator pour afficher tous les services disponibles*@
         @foreach (var item in Model)
         {
             <tr>
+                <td>@Html.DisplayFor(modelItem => item.Titre)</td>
+                <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                <td>@Html.DisplayFor(modelItem => item.Tuteur.UserName)</td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Titre)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Description)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Tuteur.UserName)
-                </td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.IdentityKey">Détails</a>
-                    <a asp-action="Edit" asp-route-id="@item.IdentityKey">Modifier</a> |
-                    <a asp-action="Horaire" asp-route-id="@item.IdentityKey" data-ajax="true"
-                       data-ajax-method="GET" data-ajax-mode="replace" data-ajax-success="$('#dialog-form').dialog('open');"
-                       data-ajax-update="#dialog-form" class="btn btn-link"> Voir l'horaire </a>
-                    <a asp-action="Delete" asp-route-id="@item.IdentityKey">Supprimer</a>
-                    @if (User.Identity.IsAuthenticated)
+                    @if (!string.IsNullOrEmpty(ViewBag.UserId))
                     {
-                        <a asp-controller="Comments" asp-action="GetComments" asp-route-ServiceId="@item.IdentityKey"
-                           data-ajax="true" data-ajax-method="GET" data-ajax-mode="replace" data-ajax-success="$('#ServiceId').val('@item.IdentityKey')"
-                           data-ajax-update="#comments" data-toggle="modal" data-target="#dialogComments" role="button">Commentaires</a>
+                        <div>
+                            @if (ViewBag.UserId != item.TuteurId)
+                            {
+                                <!-- affichage pour ceux qui n'on pas la permission de voir les actions que pourrait faire celui avec les permissions -->
+                                <a asp-action="Horaire" asp-route-id="@item.IdentityKey" data-ajax="true"
+                                   data-ajax-method="GET" data-ajax-mode="replace" data-ajax-success="$('#dialog-form').dialog('open');"
+                                   data-ajax-update="#dialog-form" class="btn btn-link"> Voir l'horaire </a>
+                            }
+                            else
+                            { <div>
+                                    <!-- action utilisateur -->
+                                    <a asp-action="Details" asp-route-id="@item.IdentityKey">Détails</a>
+                                    <a asp-action="Edit" asp-route-id="@item.IdentityKey">Modifier</a> |
+                                    <a asp-action="Delete" asp-route-id="@item.IdentityKey">Supprimer</a>
+                                    <a asp-controller="Comments" asp-action="GetComments" asp-route-ServiceId="@item.IdentityKey"
+                                       data-ajax="true" data-ajax-method="GET" data-ajax-mode="replace" data-ajax-success="$('#ServiceId').val('@item.IdentityKey')"
+                                       data-ajax-update="#comments" data-toggle="modal" data-target="#dialogComments" role="button">Commentaires</a>
+                                </div>
+                            }
+                        </div>
                     }
-                </td>
-            </tr>
-        }
+                    else
+                    {
+                        @*afficher un boutton de connection pour l'utilisateur n'étant pas connecté*@
+                        <partial name="../Shared/_ConnectionLinks.cshtml" />}
+            </td>
+        </tr>
+    }
     </tbody>
 </table>
-<div class="row col-10">
-    <div id="dialog-form" title="Information sur le service"></div>
-</div>
-<div class="modal fade" id="dialogComments">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content uk-responsive-height flex-fill">
-            <div class="modal-header">
-                <div class="modal-body justify-content-center">
-                    <button data-toggle="collapse" data-target="#newComment" class="btn btn-outline-dark">Ajouter un commentaire</button>
-                    <div class="collapse uk-align-center" width="100%" id="newComment">
-                        <form style="width:100%" method="post" asp-controller="Comments" asp-action="Create">
-                            <input hidden name="PosterId" value="@_user.GetUserId(User)" />
-                            <input id="ServiceId" hidden name="ServiceId" value="" />
-                            <textarea class="input form-control" required name="CommentText" placeholder="Entrez votre commentaire"></textarea>
-                            <button type="submit" class="btn btn-outline-success">Soumettre</button>
-                        </form>
-                    </div>
-                    <hr class="bcSeparator" />
-                    <div id="comments" style="overflow-y:scroll">
 
-                    </div>
+@*affichera lorsque la réponse en ajax sera répondu*@
+<div class="row col-12"><div id="dialog-form" title="Information sur le service"></div></div>
+
+@*dialog pour afjouter un commentaire lui est envoyé seulement si l'utilisateur est connecté*@
+@if (!string.IsNullOrEmpty(ViewBag.UserId))
+{
+    <div class="modal fade" id="dialogComments">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content uk-responsive-height flex-fill">
+                <div class="modal-header">
+                    <div class="modal-body justify-content-center">
+                        <button data-toggle="collapse" data-target="#newComment" class="btn btn-outline-dark">Ajouter un commentaire</button>
+                        <div class="collapse uk-align-center" width="100%" id="newComment">
+                            <form style="width:100%" method="post" asp-controller="Comments" asp-action="Create">
+                                @*injection du id de l'utilisateur connecté*@
+                                <input hidden name="PosterId" value="@ViewBag.UserId" />
+                                <input id="ServiceId" hidden name="ServiceId" value="" />
+                                <textarea class="input form-control" required name="CommentText" placeholder="Entrez votre commentaire"></textarea>
+                                <button type="submit" class="btn btn-outline-success">Soumettre</button>
+                            </form>
+                        </div>
+                        <hr class="bcSeparator" />
+                        <!-- affiche les commentaires en ajax call -->
+                        <div id="comments" style="overflow-y:scroll"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-
-    <style>
-        td, th {
-            padding: 0 10px;
-        }
-
-        .ui-dialog {
-            position: initial !important;
-            height: fit-content !important;
-            width: fit-content !important;
-            margin: -220px auto;
-        }
-
-            .ui-dialog .ui-dialog-content {
-                background: white !important;
-                background-color: white !important;
-            }
-    </style>
-
-
-    @section Scripts{
-        <script>
-            $(document).ready(function () {
-                formDialog = $("#dialog-form").dialog({
-                    autoOpen: false,
-                    show: {
-                        effect: "blind",
-                        duration: 500
-                    },
-                    hide: {
-                        effect: "explode",
-                        duration: 500
-                    }
-                });
-            });
-        </script>
+}
+<style>
+    td, th {
+        padding: 0 10px;
     }
+
+    .ui-dialog {
+        position: initial !important;
+        height: fit-content !important;
+        width: fit-content !important;
+        margin: -220px auto;
+    }
+
+        .ui-dialog .ui-dialog-content {
+            background: white !important;
+            background-color: white !important;
+        }
+</style>
+@section Scripts{
+    <script>
+    $(document).ready(function () {
+            formDialog = $("#dialog-form").dialog({
+                autoOpen: false, show: {
+                    effect: "blind", duration: 500
+                }, hide: { effect: "explode", duration: 500 }
+            });
+        });
+        // script qui début la table de la librairie
+        $('#tableServicesDisponible').DataTable();</script>
+}

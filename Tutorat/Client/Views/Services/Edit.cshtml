@@ -4,9 +4,9 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
 
-<h4>Services</h4>
+<div class="container p-5">    
+<h4>Modification du service</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -14,8 +14,9 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="IdentityKey" />
             <div class="form-group">
-                <label asp-for="TuteurId" class="control-label"></label>
-                <select asp-for="TuteurId" class="form-control" asp-items="ViewBag.TuteurId"></select>
+                <label class="control-label">Numéro de l'utilisateur</label>
+                <input hidden asp-for="TuteurId" value="@ViewBag.UserId" class="form-control" />
+                <input readonly value="@ViewBag.UserName" class="form-control" />
                 <span asp-validation-for="TuteurId" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -29,16 +30,17 @@
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Sauvegarder" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Retour à la présentation du service</a>
 </div>
 
+</div>
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

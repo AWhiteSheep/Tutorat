@@ -77,6 +77,9 @@ namespace Client
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllerRoute(
+                    name: "message",
+                    pattern: "{controller=Services}/{action=Index}/{message?}");
                 endpoints.MapRazorPages();
             });
         }

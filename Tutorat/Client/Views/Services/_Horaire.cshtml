@@ -1,12 +1,14 @@
 ﻿@model Client.Data.Services
-@inject UserManager<AspNetUsers> UserManager
-
+@inject UserManager<AspNetUsers> _UserManager
+@inject Client.Data.TutoratCoreContext __context
+<!-- sert comme la vue pour l'horaire afin de pouvoir mettre leur candidature -->
 @using Microsoft.AspNetCore.Identity
 
 @{
     List<Horraire> horraires = Model.Horraire.ToList();
     var modelMetadata = this.ViewContext.ViewData.ModelMetadata;
     var modelState = this.ViewContext.ViewData.ModelState;
+    var userId = _UserManager.GetUserId(User);
 }
 
 <dl class="row">
@@ -29,7 +31,7 @@
         @Html.DisplayFor(model => model.Tuteur.UserName)
     </dd>
 </dl>
-<dl class="row">
+<dl class="col-12 row">
     <dt class="col-sm-6">
         <label>Les horaires données:</label>
     </dt>
@@ -80,16 +82,42 @@
                         <td>@singleHoraire.NbHeure : @singleHoraire.NbMinute</td>
                         <td>@singleHoraire.EleveMaxInscription</td>
                         <td>
-                            @if (!ViewBag.IsTutor)
+                            @**Vérifier si l'utilisateur est connecté si oui nous vérifier son identité nous n'allons pas afficher les contrôles de connection
+        à un utilisateur déjà connecté et vis versa*@
+                            @if (!string.IsNullOrEmpty(ViewBag.UserId))
                             {
-                                @if (!singleHoraire.Demandes
-                                .Any(e => e.IdentifiantHoraire == singleHoraire.IdentityKey
-                                && e.IdentifiantUtilisateur == ViewBag.UserId))
+                                @*si c'est le tuteur nous lui donnons un autre droit*@
+                                @if (!ViewBag.IsTutor)
                                 {
-                                    <partial name="_Application.cshtml"
-                                             model="new Demandes() { IdentifiantHoraire = singleHoraire.IdentityKey, IdentifiantUtilisateur = ViewBag.UserId }" />
+                                   
+                                    @if (!(__context.Demandes.Any(e => e.IdentifiantHoraire == singleHoraire.IdentityKey && e.IdentifiantUtilisateur == userId)))
+                                    {
+                                        <partial name="_Application.cshtml"
+                                                 model="new Demandes() { IdentifiantHoraire = singleHoraire.IdentityKey, IdentifiantUtilisateur = userId }" />
 
+                                    }
+                                    else if (!(__context.Inscriptions.Any(i => i.IdentifiantDemandeur == userId)))
+                                    {
+                                        <label>votre demande a été envoyé</label>
+                                    }
+                                    else
+                                    {
+
+                                        <label>Vous êtes inscrit</label>
+                                    }
                                 }
+                                else
+                                {
+                                    @*permet au tuteur de faire la modification de l'horaire présente associé au service donné*@
+                                    <a asp-action="EditHoraire" asp-route-id="@Model.IdentityKey">
+                                        Modifier
+                                    </a>
+                                }
+                            }
+                            else
+                            {
+                                @*afficher un boutton de connection pour l'utilisateur n'étant pas connecté*@
+                                <partial name="../Shared/_ConnectionLinks.cshtml" />
                             }
                         </td>
                     </tr>
@@ -100,14 +128,6 @@
     </dd>
 </dl>
 <div>
-
-
-    @if (ViewBag.IsTutor)
-    {
-        <a asp-action="EditHoraire" asp-route-id="@Model.IdentityKey">
-            Modifier
-        </a>
-    }
 </div>
 
 <script>

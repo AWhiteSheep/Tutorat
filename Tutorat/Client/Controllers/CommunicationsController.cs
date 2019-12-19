@@ -34,8 +34,11 @@ namespace Client.Controllers
 
             // fetch de la base de données tous les communication lié avec l'utilisateur 
             var communications = _context.Communication.Include(e => e.FromUserNavigation)
+                                                        // retourne les communications faits par lui et par un utilisateur pour lui
                 .Include(d => d.SendToNavigation).Where(e => e.FromUser == userId || e.SendTo == userId).ToList();
-                       
+
+            // liste toutes les communications se faisant
+
             // retourne tous les communications
             return View(communications);
         }

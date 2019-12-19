@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using Client.Data;
 using Microsoft.AspNetCore.Identity;
 using Client.Data.Authorize;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Client.Controllers
 {
+    [Authorize]
     public class SuperAdminController : Controller
     {
         private readonly TutoratCoreContext context;
@@ -32,6 +34,24 @@ namespace Client.Controllers
             ViewData["Users"] = _userManager.Users.ToList();
             // donnes tous les roles pour les associées et les lister
             return View(await _roleManager.Roles.ToListAsync()); 
+        }
+
+        public class input {
+            public string userId { get; set; }
+            public string roleId { get; set; }
+        }
+
+        // GET: SuperAdmin
+        [HttpPost]
+        public async Task<IActionResult> Relate([Bind("userId,roleId")] input input)
+        {
+            await _userManager.AddToRoleAsync(await _userManager.GetUserAsync(User), 
+                (await _roleManager.FindByIdAsync(input.roleId)).Name);
+
+            // return les asp net users
+            ViewData["Users"] = _userManager.Users.ToList();
+            // donnes tous les roles pour les associées et les lister
+            return View("Index", await _roleManager.Roles.ToListAsync()); 
         }
 
         // GET: SuperAdmin/Details/5
