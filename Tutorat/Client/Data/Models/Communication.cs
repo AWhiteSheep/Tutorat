@@ -8,9 +8,7 @@ namespace Client.Data
     public partial class Communication
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public string Id { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int OrderId { get; set; }
         [Required]
         [StringLength(450)]
