@@ -19,6 +19,7 @@ namespace Client.Controllers
         private readonly TutoratCoreContext _context;
         private readonly UserManager<AspNetUsers> _userManager;
         private readonly SignInManager<AspNetUsers> _signInManager;
+        private bool CurrentIsAdmin { get; set; }
 
         public ServicesController(TutoratCoreContext context, UserManager<AspNetUsers> userManager, SignInManager<AspNetUsers> signInManager)
         {
@@ -113,11 +114,11 @@ namespace Client.Controllers
             {
                 // ajoute l'application
                 _context.Add(application);
-                // sauvegarde et redirige
 
+                // savegarde les changement 
                 await _context.SaveChangesAsync();
 
-
+                // load la référence vers une entité lié afin de pouvoir l'accéder dans le code plus loins
                 await _context.Entry(application).Reference(a => a.IdentifiantUtilisateurNavigation)
                                             .LoadAsync();
 
@@ -136,26 +137,38 @@ namespace Client.Controllers
             return Problem();
         }
 
+
+        // configuration de l'email de configuration en recevant la demande 
+        // afin d'envoyer à la personne une confirmation d'inscription
+        [Authorize]
         private void SendApplicationEmail(Demandes application)
         {
+            // initilisation du service exchange donner par le service nugget par microsoft
             ExchangeService myservice = new ExchangeService(ExchangeVersion.Exchange2010_SP1);
             myservice.Credentials = new WebCredentials();
 
+            // préparation du message à envoyer à la personne qui à fait la demande
             string message = $"Confirmation d'inscription -- {application.IdentifiantHoraireNavigation.Service.ServiceTypeCode}; {System.Environment.NewLine}";
 
+            // email du destinataire donc la personne qui a fait la demande dont nous la retrouvont à travers la navigation
+            // de la demande 
             string emailDestination = application.IdentifiantUtilisateurNavigation.Email;
 
             try
             {
+                // url où le service nous permet de nous authentifier avant d'envoyer l'email
                 string serviceUrl = "https://outlook.office365.com/ews/exchange.asmx";
 
+                // préparation de l'objet message afin de tout bien envelopper avant l'envoie
                 myservice.Url = new Uri(serviceUrl);
                 EmailMessage emailMessage = new EmailMessage(myservice);
                 emailMessage.Subject = "Test Subject";
                 emailMessage.Body = new MessageBody(message);
 
+                // ajout du récipient lequel est le nouveau venu
                 emailMessage.ToRecipients.Add(emailDestination);
                 emailMessage.Send();
+                // message envoyé!
                 Console.Write("message envoyé");
                 Console.ReadKey();
             }
@@ -175,20 +188,18 @@ namespace Client.Controllers
             }
         }
 
-            // GET: Services/Details/5
-            public async Task<IActionResult> EditHoraire(int? id)
+        /// <summary>
+        /// Édition de l'horaire donnée pour le service requis
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Authorize]
+        public async Task<IActionResult> EditHoraire(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-
-
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Redirect("/Identity/Login");
-            }
-
 
             // elle retourne le user id
             var userId = _userManager.GetUserId(User);
@@ -202,21 +213,16 @@ namespace Client.Controllers
                 return NotFound();
             }
 
+            // retourne la vue avec le service et une référence à l'objet horraire au travers l'entité service
             return View(services);
         }
 
-        // GET: Services/Create
+        [Authorize]
         public IActionResult Create()
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                ViewData["TuteurId"] = _userManager.GetUserId(User);
-                return View();
-            }
-            else 
-            {
-                return Redirect("/Home");
-            }
+            // Retourne la vue pour créer un nouveau service
+            ViewData["TuteurId"] = _userManager.GetUserId(User);
+            return View();
         }
 
         // POST: Services/Create
@@ -224,15 +230,18 @@ namespace Client.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create([Bind("IdentityKey,TuteurId,Titre,Description")] Services services)
         {
+            // vérifie si le service, est complet et ajoute à la base de données
             if (ModelState.IsValid)
             {
                 _context.Add(services);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TuteurId"] = new SelectList(_context.AspNetUsers, "Id", "Id", services.TuteurId);
+            // Retourne la vue pour créer continuer la création, car elle n'est pas terminé si elle n'est pas valide
+            ViewData["TuteurId"] = _userManager.GetUserId(User);
             return View(services);
         }
 
@@ -249,7 +258,8 @@ namespace Client.Controllers
             {
                 return NotFound();
             }
-            ViewData["TuteurId"] = new SelectList(_context.AspNetUsers, "Id", "Id", services.TuteurId);
+            // Retourne la vue pour créer continuer la création
+            ViewData["TuteurId"] = _userManager.GetUserId(User);
             return View(services);
         }
 
@@ -258,6 +268,7 @@ namespace Client.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, [Bind("IdentityKey,TuteurId,Titre,Description")] Services services)
         {
             if (id != services.IdentityKey)
@@ -265,10 +276,22 @@ namespace Client.Controllers
                 return NotFound();
             }
 
+
+
+            // retourne l'utilisateur 
+            var user = await _userManager.GetUserAsync(User);
+            CurrentIsAdmin = await  _userManager.IsInRoleAsync(user, "Admin");
+
             if (ModelState.IsValid)
             {
+
+                // si il n'est pas admin faire la vérification que le service lui appartient
+                if(services.TuteurId != user.Id)
+                    if(!CurrentIsAdmin)
+                           return NotFound(); // ne pas continuer l'opération
                 try
                 {
+                    // sinon faire le update du nouveau service
                     _context.Update(services);
                     await _context.SaveChangesAsync();
                 }
@@ -285,11 +308,13 @@ namespace Client.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TuteurId"] = new SelectList(_context.AspNetUsers, "Id", "Id", services.TuteurId);
+            // Retourne la vue pour créer continuer la création
+            ViewData["TuteurId"] = _userManager.GetUserId(User);
             return View(services);
         }
 
-        // GET: Services/Delete/5
+        [Authorize]
+        // envoit une demande de confirmation pour la suppression du service demadé
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -297,9 +322,14 @@ namespace Client.Controllers
                 return NotFound();
             }
 
+
+            // essait de retourner le service qui appartien au tuteur demandé
             var services = await _context.Services
                 .Include(s => s.Tuteur)
                 .FirstOrDefaultAsync(m => m.IdentityKey == id);
+
+
+
             if (services == null)
             {
                 return NotFound();
@@ -314,6 +344,18 @@ namespace Client.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var services = await _context.Services.FindAsync(id);
+            
+            
+            
+            // retourne l'utilisateur 
+            var user = await _userManager.GetUserAsync(User);
+            CurrentIsAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+
+            // si il n'est pas admin faire la vérification que le service lui appartient
+            if (services.TuteurId != user.Id)
+                if (!CurrentIsAdmin)
+                    return NotFound(); // ne pas continuer l'opération
+
             _context.Services.Remove(services);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -323,5 +365,6 @@ namespace Client.Controllers
         {
             return _context.Services.Any(e => e.IdentityKey == id);
         }
+
     }
 }

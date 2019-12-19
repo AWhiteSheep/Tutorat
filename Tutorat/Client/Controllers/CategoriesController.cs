@@ -18,31 +18,31 @@ namespace Client.Controllers
             _context = context;
         }
 
-        // GET: Categories
+        // affiche la liste des catégories possibles
         public async Task<IActionResult> Index()
         {
             return View(await _context.Categories.ToListAsync());
         }
 
-        // GET: Categories/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        ////
+        //public async Task<IActionResult> Details(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var categories = await _context.Categories
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (categories == null)
-            {
-                return NotFound();
-            }
+        //    var categories = await _context.Categories
+        //        .FirstOrDefaultAsync(m => m.Id == id);
+        //    if (categories == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(categories);
-        }
+        //    return View(categories);
+        //}
 
-        // GET: Categories/Create
+            // retourne la vue pour créer un nouvelle catégorie
         public IActionResult Create()
         {
             return View();
@@ -55,8 +55,10 @@ namespace Client.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name")] Categories categories)
         {
+            // valid la nouvelle catégorie 
             if (ModelState.IsValid)
             {
+                // ajoute à la base de donnée et retourne une action de redirection
                 _context.Add(categories);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -64,7 +66,7 @@ namespace Client.Controllers
             return View(categories);
         }
 
-        // GET: Categories/Edit/5
+        // affiche afin de faire l'édition de la catégori re trouvé
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -87,6 +89,8 @@ namespace Client.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Categories categories)
         {
+
+            // si la catégorie détient un id, continuons la transaction
             if (id != categories.Id)
             {
                 return NotFound();
@@ -96,6 +100,7 @@ namespace Client.Controllers
             {
                 try
                 {
+                    // update la catégorie avec tous les entités qui pourrait suivre cette dernière et faire le updates
                     _context.Update(categories);
                     await _context.SaveChangesAsync();
                 }
@@ -115,7 +120,6 @@ namespace Client.Controllers
             return View(categories);
         }
 
-        // GET: Categories/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -123,6 +127,8 @@ namespace Client.Controllers
                 return NotFound();
             }
 
+
+            // supprime la catégorie
             var categories = await _context.Categories
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (categories == null)

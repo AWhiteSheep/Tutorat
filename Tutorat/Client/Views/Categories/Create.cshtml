@@ -1,12 +1,11 @@
 ﻿@model Client.Data.Categories
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Création";
 }
 
-<h1>Create</h1>
-
-<h4>Categories</h4>
+<!-- formulaire de création de nouvelle catégorie, le plan est de créer un menu qui dans la page d'accueil afin de chercher ce que l'on veut s-->
+<h4>Création d'une nouvelle catégorie</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -25,7 +24,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-controller="Home" asp-action="Index">Retour à la page d'accueil</a>
 </div>
 
 @section Scripts {

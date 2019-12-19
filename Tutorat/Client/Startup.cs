@@ -81,6 +81,7 @@ namespace Client
             });
         }
 
+        // configuratino première pour des comptes
         private async Task CreateRoles(IServiceProvider serviceProvider, params string[] roleNames)
         {
             //initialisation du roleManager et userManager 

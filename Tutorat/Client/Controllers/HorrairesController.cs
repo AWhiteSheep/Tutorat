@@ -36,13 +36,6 @@ namespace Client.Controllers
         // GET: Horraires/Details/5
         public async Task<IActionResult> Students(int? id)
         {
-
-
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Redirect("/Identity/Login");
-            }
-
             if (id == null)
             {
                 return NotFound();
@@ -76,7 +69,7 @@ namespace Client.Controllers
             return View(horraire);
         }
 
-        // GET: Horraires/Create
+
         public IActionResult Create(int serviceId)
         {
             if (serviceId == null)

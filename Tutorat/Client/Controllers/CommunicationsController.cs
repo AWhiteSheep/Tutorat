@@ -18,6 +18,7 @@ namespace Client.Controllers
         private readonly UserManager<AspNetUsers> _userManager;
         private readonly SignInManager<AspNetUsers> _signInManager;
 
+        // injection du user manager et le sign in afin de faire les vérification et retourner les bonnes données
         public CommunicationsController(TutoratCoreContext context, UserManager<AspNetUsers> userManager, SignInManager<AspNetUsers> signInManager)
         {
             _context = context;
